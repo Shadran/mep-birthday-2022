@@ -1,12 +1,18 @@
 <form [formGroup]="uploadForm" class="row g-2">
     <div class="col-9">
-        <input type="text" class="form-control" placeholder="File Url" formControlName="fileUrl">
+        <input type="text" class="form-control" [class.is-invalid]="uploadError" placeholder="File Url" formControlName="fileUrl">
+        <div *ngIf="uploadError" class="invalid-feedback">
+            {{uploadError}}
+        </div>
     </div>
     <div class="col-3">
         <button class="btn btn-primary" (click)="uploadImageUrl()">Upload</button>
     </div>
     <div class="col-12">
-        <input class="form-control" type="file" id="formFile" (change)="fileChange($event)" accept=".jpg,.png">
+        <input class="form-control" [class.is-invalid]="fileLoadError" type="file" id="formFile" (change)="fileChange($event)" accept=".jpg,.png">
+        <div *ngIf="fileLoadError" class="invalid-feedback">
+            {{fileLoadError}}
+        </div>
     </div>
 
 </form>

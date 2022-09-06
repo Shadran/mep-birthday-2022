@@ -110,5 +110,8 @@
       }
     }
   },
-  "defaultProject": "ImageOverlap"
+  "defaultProject": "ImageOverlap",
+  "cli": {
+    "analytics": false
+  }
 }

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Output, SecurityContext } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-image-uploader',
@@ -9,8 +9,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 })
 export class ImageUploaderComponent implements OnInit {
 
-  previewSrc?:string;
   uploadError: string = '';
+  fileLoadError: string = '';
   uploadForm! : FormGroup;
 
   @Output() srcChangedEvent = new EventEmitter<string>();
@@ -30,24 +30,29 @@ export class ImageUploaderComponent implements OnInit {
     if (!target || !target.files) return;
     let fileList: FileList = target.files;
     if(fileList.length > 0) {
-        let file: File = fileList[0];
-        this.previewSrc = this.sanitizer.sanitize(SecurityContext.RESOURCE_URL, this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(file)))!;
-        this.srcChangedEvent.emit(this.previewSrc);
+      this.uploadError = '';
+      this.fileLoadError = '';
+      let file: File = fileList[0];
+      let previewSrc = this.sanitizer.sanitize(SecurityContext.RESOURCE_URL, this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(file)))!;
+      let imageTest = new Image();
+      imageTest.onerror = () => {this.fileLoadError = "Cannot load image from specified file :( . Make sure the file is a readable jpg/png file and try again."};
+      imageTest.onload = () => {
+        this.srcChangedEvent.emit(previewSrc);
+      };
+      imageTest.src = previewSrc;
     }
   }
 
   uploadImageUrl() {
+    this.uploadError = '';
+    this.fileLoadError = '';
     let imageTest = new Image();
-    imageTest.onerror = () => {this.uploadError = "Cannot load image from specified URL"};
+    let previewSrc = this.uploadForm.get('fileUrl')?.value;
+    imageTest.onerror = () => {this.uploadError = "Cannot load image from specified URL :( . Make sure the link points to a jpg/png image and try again."};
     imageTest.onload = () => {
-      this.previewSrc = imageTest.src; 
-      this.srcChangedEvent.emit(this.previewSrc);
+      this.srcChangedEvent.emit(previewSrc);
     };
-    imageTest.src = this.uploadForm.get('fileUrl')?.value
-  }
-
-  reset() {
-    this.previewSrc = '';
+    imageTest.src = previewSrc;
   }
 
 }
