@@ -1,0 +1,10 @@
+<div class="row g-3">
+    <div class="col-12">
+        <canvas hidden width="500" height="500" #imageCanvas></canvas>
+        <h3>Preview:</h3>
+        <img class="image-preview" [src]="finalImageSrc" />
+    </div>
+    <div class="col-12">
+        <button class="btn btn-primary" (click)="downloadImage()">Download</button>
+    </div>
+</div>
